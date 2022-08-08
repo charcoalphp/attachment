@@ -5,31 +5,23 @@ namespace Charcoal\Admin\Widget;
 use ArrayIterator;
 use RuntimeException;
 use InvalidArgumentException;
-
 // From Pimple
 use Pimple\Container;
-
 // From Mustache
 use Mustache_LambdaHelper as LambdaHelper;
-
 // From 'charcoal-config'
 use Charcoal\Config\ConfigurableInterface;
-
 // From 'charcoal-factory'
 use Charcoal\Factory\FactoryInterface;
-
 // From 'charcoal-core'
 use Charcoal\Loader\CollectionLoader;
 use Charcoal\Model\ModelInterface;
-
 // From 'charcoal-translator'
 use Charcoal\Translator\Translation;
-
 // From 'charcoal-admin'
 use Charcoal\Admin\AdminWidget;
 use Charcoal\Admin\Ui\ObjectContainerInterface;
 use Charcoal\Admin\Ui\ObjectContainerTrait;
-
 // From 'charcoal-attachment'
 use Charcoal\Attachment\Interfaces\AttachmentContainerInterface;
 use Charcoal\Attachment\Traits\ConfigurableAttachmentsTrait;
@@ -614,12 +606,12 @@ class AttachmentWidget extends AdminWidget implements
                 }
 
                 foreach ($faIcon as &$icon) {
-                    $icon = 'fa fa-'.$icon;
+                    $icon = 'fa fa-' . $icon;
                 }
             } else {
                 $attParts = explode('/', $attType);
                 if (isset($this->defaultIcons[end($attParts)])) {
-                    $faIcon = 'fa fa-'.$this->defaultIcons[end($attParts)];
+                    $faIcon = 'fa fa-' . $this->defaultIcons[end($attParts)];
                 }
             }
 
@@ -738,23 +730,59 @@ class AttachmentWidget extends AdminWidget implements
     }
 
     /**
-     * Retrieve the current widget's options as a JSON object.
+     * @return array
+     */
+    public function widgetDataForJs()
+    {
+        return [
+            'obj_type' => $this->obj()->objType(),
+            'obj_id'   => $this->obj()->id(),
+            'group'    => $this->group(),
+        ];
+    }
+
+    /**
+     * Retrieve the widget's options.
      *
-     * @return string A JSON string.
+     * @return array
      */
     public function widgetOptions()
     {
-        $options = [
+        return [
             'obj_type'           => $this->obj()->objType(),
             'obj_id'             => $this->obj()->id(),
             'group'              => $this->group(),
             'attachment_options' => $this->attachmentOptions(),
             'attachable_objects' => $this->attachableObjects(),
-            'title'              => $this->title(),
-            'lang'               => $this->translator()->getLocale()
+            'title'              => (string)$this->title(),
+            'lang'               => $this->translator()->getLocale(),
         ];
+    }
 
-        return json_encode($options, true);
+    /**
+     * Converts the widget's {@see self::widgetOptions() options} as a JSON string.
+     *
+     * @return string Returns data serialized with {@see json_encode()}.
+     */
+    final public function widgetOptionsAsJson()
+    {
+        $options = (JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+        if ($this->debug()) {
+            $options = ($options | JSON_PRETTY_PRINT);
+        }
+
+        return json_encode($this->widgetOptions(), $options);
+    }
+
+    /**
+     * Converts the widget's {@see self::widgetOptions() options} as a JSON string, protected from Mustache.
+     *
+     * @return string Returns a stringified JSON object, protected from Mustache rendering.
+     */
+    final public function escapedWidgetOptionsAsJson()
+    {
+        return '{{=<% %>=}}' . $this->widgetOptionsAsJson() . '<%={{ }}=%>';
     }
 
     /**

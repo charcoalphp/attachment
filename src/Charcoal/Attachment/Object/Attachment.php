@@ -7,22 +7,16 @@ use Exception;
 use ReflectionClass;
 use RuntimeException;
 use InvalidArgumentException;
-
 // From PSR-7
 use Psr\Http\Message\UriInterface;
-
 // From Pimple
 use Pimple\Container;
-
 // From 'charcoal-core'
 use Charcoal\Loader\CollectionLoader;
-
 // From 'charcoal-object'
 use Charcoal\Object\Content;
-
 // From 'charcoal-translator'
 use Charcoal\Translator\Translation;
-
 // From 'charcoal-attachment'
 use Charcoal\Attachment\Interfaces\AttachableInterface;
 use Charcoal\Attachment\Interfaces\AttachmentContainerInterface;
@@ -45,15 +39,15 @@ class Attachment extends Content implements AttachableInterface
     /**
      * Default attachment types
      */
-    const FILE_TYPE      = File::class;
-    const LINK_TYPE      = Link::class;
-    const IMAGE_TYPE     = Image::class;
-    const EMBED_TYPE     = Embed::class;
-    const VIDEO_TYPE     = Video::class;
-    const TEXT_TYPE      = Text::class;
-    const GALLERY_TYPE   = Gallery::class;
-    const ACCORDION_TYPE = Accordion::class;
-    const CONTAINER_TYPE = AttachmentContainer::class;
+    public const FILE_TYPE      = File::class;
+    public const LINK_TYPE      = Link::class;
+    public const IMAGE_TYPE     = Image::class;
+    public const EMBED_TYPE     = Embed::class;
+    public const VIDEO_TYPE     = Video::class;
+    public const TEXT_TYPE      = Text::class;
+    public const GALLERY_TYPE   = Gallery::class;
+    public const ACCORDION_TYPE = Accordion::class;
+    public const CONTAINER_TYPE = AttachmentContainer::class;
 
     /**
      * The attachment type.
@@ -1062,7 +1056,7 @@ class Attachment extends Content implements AttachableInterface
         }
 
         $text = preg_replace_callback(
-            '~'.$search.'~i',
+            '~' . $search . '~i',
             function ($matches) {
                 return $this->createAbsoluteUrl($matches[1]);
             },
